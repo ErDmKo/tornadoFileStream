@@ -30,21 +30,24 @@ class StreamingHandler(tornado.web.RequestHandler):
         self.bytes_read = 0
 
     def prepare(self):
+        EchoWebSocket.send_msg('prepare')
         self.fp = open('static/upload/file_{0}'.format(uuid.uuid1().hex), 'wb')
         self.request.connection.set_max_body_size(99999999999)
         self.request.connection.set_body_timeout(10000)
 
     def data_received(self, chunk):
         self.fp.write(chunk)
-        EchoWebSocket.send_msg(len(chunk))
+        EchoWebSocket.send_msg(str(len(chunk)))
         self.bytes_read += len(chunk)
 
     def post(self):
+        EchoWebSocket.send_msg('ready')
         self.write(str(self.bytes_read))
 
 if __name__ == "__main__":
     application = tornado.web.Application([
-            (r"/upload/", StreamingHandler),
+            (r"/tornado/upload/", StreamingHandler),
+            (r"/tornado/ws/", EchoWebSocket),
         ])
     application.listen(8888)
     ioloop = tornado.ioloop.IOLoop().instance()

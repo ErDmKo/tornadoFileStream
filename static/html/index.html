@@ -5,7 +5,7 @@
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <body>
         <h1>Download file <span id="response"></span></h1>
-        <form action="/upload/" enctype="multipart/form-data" method="post">
+        <form action="/tornado/upload/" enctype="multipart/form-data" id="file_form" method="post">
             Select file to upload:
             <input multiple type="file" name="fileToUpload" id="fileToUpload">
             <input type="submit" value="Upload Image" name="submit">
@@ -13,7 +13,20 @@
     </body>
     <script>
         var input = document.getElementById('fileToUpload'),
-            statusInfo = document.getElementById("response");
+            statusInfo = document.getElementById("response"),
+            loc = window.location, 
+            new_uri="ws://" + loc.host+loc.pathname + 'tornado/ws/',
+            ws = new WebSocket(new_uri);
+
+        ws.onopen = function() {
+             console.log('onopen');
+        }; 
+        ws.onclose = function() {
+             console.log('close');
+        }; 
+        ws.onmessage = function(e) {
+             console.log(e.data);
+        }; 
 
         input.addEventListener("change", function (e) {
             var i = 0, len = this.files.length, img, reader, file;
@@ -26,7 +39,7 @@
                 var formdata = new FormData();
                 formdata.append("file", file);
                 $.ajax({
-                    url: "upload",
+                    url: document.getElementById("file_form").action,
                     type: "POST",
                     data: formdata,
                     processData: false,
