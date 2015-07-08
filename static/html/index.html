@@ -7,25 +7,36 @@
         <h1>Download file <span id="response"></span></h1>
         <form action="/tornado/upload/" enctype="multipart/form-data" id="file_form" method="post">
             Select file to upload:
-            <input multiple type="file" name="fileToUpload" id="fileToUpload">
+            <input type="file" name="fileToUpload" id="fileToUpload">
             <input type="submit" value="Upload Image" name="submit">
         </form>
+        <h2>Uploaded</h2>
+        <ul id="list">
+            
+        </ul>
     </body>
     <script>
         var input = document.getElementById('fileToUpload'),
             statusInfo = document.getElementById("response"),
             loc = window.location, 
             new_uri="ws://" + loc.host+loc.pathname + 'tornado/ws/',
+            listElement = document.getElementById("list"),
             ws = new WebSocket(new_uri);
 
         ws.onopen = function() {
-             console.log('onopen');
+            console.log('onopen');
         }; 
         ws.onclose = function() {
-             console.log('close');
+            console.log('close');
         }; 
         ws.onmessage = function(e) {
-             console.log(e.data);
+            if ('/upload/' == e.data.substr(0, 8)) {
+                var li = document.createElement('li');
+                li.innerHTML = '<a target="_blank" href="'+e.data+'">'+e.data+'</a>';
+                list.appendChild(li);
+            } else {
+                statusInfo.innerHTML = (+e.data*100 || 100).toFixed(0) + "%"
+            }
         }; 
 
         input.addEventListener("change", function (e) {
@@ -44,6 +55,11 @@
                     data: formdata,
                     processData: false,
                     contentType: false
+                })
+                .done(function(data){
+                    var li = document.createElement('li');
+                    li.innerHTML = '<a target="_blank" href="'+data+'">'+data+'</a>';
+                    list.appendChild(li);
                 });
             }
         });

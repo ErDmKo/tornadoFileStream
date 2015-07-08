@@ -10,6 +10,7 @@ nginx:
   build: ./static
   volumes:
     - ./static/html:/app/html/
+    - ./static/upload:/app/upload/
   links:
     - pythonserver
   ports:
