@@ -1,5 +1,6 @@
 import tornado.ioloop
 import tornado.web
+import os
 from tornado import autoreload, websocket
 import uuid
 import tempfile, logging
@@ -9,6 +10,9 @@ class EchoWebSocket(websocket.WebSocketHandler):
 
     def open(self):
         EchoWebSocket.waiters.add(self)
+        for subdir, dirs, files in os.walk('static/upload/'): 
+            for fileInfo in files:
+                EchoWebSocket.send_msg('/upload/'+fileInfo)
 
     def on_message(self, message):
         self.write_message(u"You said: " + message)
