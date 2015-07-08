@@ -2,12 +2,37 @@
     <head>
         <title>Simple stream App</title>
     </head>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <body>
-        <h1>Download file</h1>
+        <h1>Download file <span id="response"></span></h1>
         <form action="/upload/" enctype="multipart/form-data" method="post">
             Select file to upload:
-            <input type="file" name="fileToUpload" id="fileToUpload">
+            <input multiple type="file" name="fileToUpload" id="fileToUpload">
             <input type="submit" value="Upload Image" name="submit">
         </form>
     </body>
+    <script>
+        var input = document.getElementById('fileToUpload'),
+            statusInfo = document.getElementById("response");
+
+        input.addEventListener("change", function (e) {
+            var i = 0, len = this.files.length, img, reader, file;
+
+            statusInfo.innerHTML = "Uploading . . .";
+            for ( ; i < len; i++ ) {
+                file = this.files[i];
+                reader = new FileReader();
+                reader.readAsDataURL(file);
+                var formdata = new FormData();
+                formdata.append("file", file);
+                $.ajax({
+                    url: "upload",
+                    type: "POST",
+                    data: formdata,
+                    processData: false,
+                    contentType: false
+                });
+            }
+        });
+    </script>
 </html>
