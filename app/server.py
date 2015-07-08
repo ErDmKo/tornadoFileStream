@@ -10,7 +10,7 @@ class StreamHandler(tornado.web.RequestHandler):
 
 if __name__ == "__main__":
     application = tornado.web.Application([
-            (r"/", StreamHandler),
+            (r"/upload/", StreamHandler),
         ])
     application.listen(8888)
     tornado.ioloop.IOLoop.instance().start()
