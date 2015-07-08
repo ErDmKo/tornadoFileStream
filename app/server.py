@@ -3,14 +3,14 @@ import tornado.web
 import os
 from tornado import autoreload, websocket
 import uuid
-import tempfile, logging
+
 
 class EchoWebSocket(websocket.WebSocketHandler):
     waiters = set()
 
     def open(self):
         EchoWebSocket.waiters.add(self)
-        for subdir, dirs, files in os.walk('static/upload/'): 
+        for subdir, dirs, files in os.walk('static/upload/'):
             for fileInfo in files:
                 EchoWebSocket.send_msg('/upload/'+fileInfo)
 
@@ -23,10 +23,8 @@ class EchoWebSocket(websocket.WebSocketHandler):
     @classmethod
     def send_msg(cls, msg):
         for waiter in cls.waiters:
-            try:
-                waiter.write_message(msg)
-            except:
-                logging.error("Error sending message", exc_info=True)
+            waiter.write_message(msg)
+
 
 @tornado.web.stream_request_body
 class StreamingHandler(tornado.web.RequestHandler):
