@@ -1,5 +1,4 @@
 import tornado.web
-import requests
 
 from tornado.testing import AsyncHTTPTestCase
 from app.server import StreamingHandler
@@ -15,11 +14,13 @@ class StreamTest(AsyncHTTPTestCase):
         self.assertEqual(1, 1)
 
     def test_post(self):
-        response = requests.post(
-            self.get_url('/'),
-            files={'file': open('tests/test.pdf', 'r')},
+        response = self.fetch('/', method="POST", body=b"")
+        '''
+            files={'file': open('tests/test.pdf', 'rb')},
             headers={
                 'Content-Type': 'application/pdf'
             }
         )
+        '''
+        response.rethrow()
         self.assertEqual(response.code, 200)
